@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi import UploadFile, File
 from pathlib import Path
 import shutil
+import pdfplumber
+
 # It creates one FastApi() application
 app = FastAPI()
 
@@ -27,7 +29,16 @@ def upload_resum(file: UploadFile = File(...)):
 
     with open(destination, "wb") as buffer:
         shutil.copyfileobj(file.file,buffer)
+
+    resume_text = ""
+    with pdfplumber.open(destination) as pdf:
+        for page in pdf.pages:
+            text = page.extract_text()
+
+            if(text):
+                resume_text+= text + "\n"
+
     return {
-        "message": "Resume uploaded successfuly",
-        "filename": file.filename
+        "filename": file.filename,
+        "text": resume_text
     }
