@@ -3,7 +3,11 @@ from fastapi import UploadFile, File
 from pathlib import Path
 import shutil
 import pdfplumber
+from database import engine
+from  models import Resume
+from database import Base
 
+Base.metadata.create_all(bind = engine)
 # It creates one FastApi() application
 app = FastAPI()
 
@@ -24,7 +28,7 @@ UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 @app.post("/fileUpload")
-def upload_resum(file: UploadFile = File(...)):
+def upload_resumee(file: UploadFile = File(...)):
     destination = UPLOAD_DIR / file.filename
 
     with open(destination, "wb") as buffer:
